@@ -53,7 +53,7 @@ def generate_anki_deck(
                 fret_note = add_semitones(string_note, fret_number)
                 note = genanki.Note(
                     model=fretboard_model,
-                    guid=genanki.guid_for(fret_number, string_number, fret_note),
+                    guid=genanki.guid_for(id, fret_number, string_number, fret_note),
                     fields=[
                         str(string_number),
                         str(fret_number),
