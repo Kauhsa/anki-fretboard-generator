@@ -34,8 +34,6 @@ class VerticalPositionCalculator:
 
 def generate_fretboard_svg(
     fret_count=21,
-    first_fret_width=50,
-    background="#F0D9B5",
     string_widths=[4, 3, 2.5, 2],
     highlight_position=(1, 2),
 ):
@@ -45,7 +43,7 @@ def generate_fretboard_svg(
 
     svg_xml_template = """
     <svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}">
-        <rect id="neck" width="{width}" height="{height}" fill="{background}" />
+        <rect id="neck" width="{width}" height="{height}" fill="#F0D9B5" />
         <g id="markers">
             {markers}
         </g>
@@ -78,7 +76,7 @@ def generate_fretboard_svg(
     """
 
     string_height = 20
-    horizontal_pos = HorizontalPositionCalculator(first_fret_width)
+    horizontal_pos = HorizontalPositionCalculator(first_fret_width=50)
     vertical_pos = VerticalPositionCalculator(string_height, len(string_widths))
     neck_height = vertical_pos.neck_height()
     total_width = horizontal_pos.fret(fret_count)
@@ -123,7 +121,6 @@ def generate_fretboard_svg(
         frets=frets,
         highlight=highlight,
         markers=markers,
-        background=background,
     )
 
 
