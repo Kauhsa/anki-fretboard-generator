@@ -30,7 +30,9 @@ class VerticalPositionCalculator:
         self.string_count = string_count
 
     def string(self, string_number: int):
-        return string_number * self.string_height + (self.string_height / 2)
+        return (self.string_count - string_number - 1) * self.string_height + (
+            self.string_height / 2
+        )
 
     def neck_height(self):
         return self.string_height * self.string_count
