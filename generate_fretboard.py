@@ -1,8 +1,12 @@
+from collections import namedtuple
+from typing import Optional
+
+
 class HorizontalPositionCalculator:
-    def __init__(self, first_fret_width):
+    def __init__(self, first_fret_width: float):
         self.first_fret_width = first_fret_width
 
-    def fret(self, fret_number):
+    def fret(self, fret_number: int):
         """
         Return the position of the given fret number.
         """
@@ -15,28 +19,31 @@ class HorizontalPositionCalculator:
             (1 - fret_multiplier**fret_number) / (1 - fret_multiplier)
         )
 
-    def marker(self, fret_number):
+    def marker(self, fret_number: int):
         # The position of the marker is exactly between previous and current fret.
         return (self.fret(fret_number - 1) + self.fret(fret_number)) / 2
 
 
 class VerticalPositionCalculator:
-    def __init__(self, string_height, string_count):
+    def __init__(self, string_height: float, string_count: int):
         self.string_height = string_height
         self.string_count = string_count
 
-    def string(self, string_number):
+    def string(self, string_number: int):
         return string_number * self.string_height + (self.string_height / 2)
 
     def neck_height(self):
         return self.string_height * self.string_count
 
 
+Position = namedtuple("Position", ["fret", "string"])
+
+
 def generate_fretboard_svg(
-    fret_count=21,
-    string_widths=[4, 3, 2.5, 2],
-    highlight_position=(1, 2),
-):
+    fret_count: int,
+    string_widths: list[float],
+    highlight_position: Optional[Position] = None,
+) -> str:
     """
     Generate a fretboard SVG image with the given number of strings and frets.
     """
@@ -60,7 +67,7 @@ def generate_fretboard_svg(
     """
 
     strings_template = """
-    <line x1="0" y1="{y}" x2="{width}" y2="{y}" stroke="#888" stroke-width="{stroke_width}" />
+    <line x1="0" y1="{y}" x2="{width}" y2="{y}" stroke="{color}" stroke-width="{stroke_width}" />
     """
 
     frets_template = """
@@ -84,8 +91,16 @@ def generate_fretboard_svg(
     strings = ""
     for i, stroke_width in enumerate(string_widths):
         y = vertical_pos.string(i)
+        string_highlighted = (
+            highlight_position
+            and highlight_position.string == i
+            and highlight_position.fret == 0
+        )
         strings += strings_template.format(
-            y=y, width=total_width, stroke_width=stroke_width
+            y=y,
+            width=total_width,
+            stroke_width=stroke_width,
+            color="red" if string_highlighted else "#888",
         )
 
     frets = ""
@@ -109,9 +124,9 @@ def generate_fretboard_svg(
             markers += marker_template.format(x=x, y=y2)
 
     highlight = ""
-    if highlight_position:
-        highlight_x = horizontal_pos.marker(highlight_position[0])
-        highlight_y = vertical_pos.string(highlight_position[1])
+    if highlight_position and highlight_position.fret != 0:
+        highlight_x = horizontal_pos.marker(highlight_position.fret)
+        highlight_y = vertical_pos.string(highlight_position.string)
         highlight = highlight_template.format(x=highlight_x, y=highlight_y)
 
     return svg_xml_template.format(
@@ -125,4 +140,10 @@ def generate_fretboard_svg(
 
 
 if __name__ == "__main__":
-    print(generate_fretboard_svg())
+    print(
+        generate_fretboard_svg(
+            fret_count=21,
+            string_widths=[4, 3, 2.5, 2],
+            highlight_position=Position(fret=0, string=0),
+        )
+    )
