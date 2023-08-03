@@ -29,12 +29,10 @@ def positive_float_list(value: str) -> list[float]:
 def generate_deck(
     name: Annotated[str, typer.Option()],
     output_path: Annotated[Path, typer.Option()],
-    deck_id: Annotated[Optional[int], typer.Option()] = None,
-    tuning: Annotated[str, typer.Option(parser=note_list)] = "E,A,D,G,B,E",
-    widths: Annotated[
-        str, typer.Option(parser=positive_float_list)
-    ] = "3,2.5,2,1.5,1,1",
+    tuning: Annotated[str, typer.Option(parser=note_list)],
+    widths: Annotated[str, typer.Option(parser=positive_float_list)],
     frets: Annotated[int, typer.Option()] = 21,
+    deck_id: Annotated[Optional[int], typer.Option()] = None,
 ):
     if len(tuning) != len(widths):
         raise ValueError("Tuning and widths must have the same length.")
